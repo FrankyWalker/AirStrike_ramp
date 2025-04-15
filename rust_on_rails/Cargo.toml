@@ -1,0 +1,41 @@
+[package]
+name = "rust_on_rails"
+version = "3.0.0"
+edition = "2021"
+description = "Rust On Rails is a rust framework to make building native and web apps easy as possible"
+license = "BSD-3-Clause"
+repository = "https://github.com/CalebCouch/rust_on_rails.git"
+
+[dependencies]
+log = "0.4.25"
+winit = {version="0.30.9", features=["android-native-activity"]}
+wgpu = "24.0.1"
+include_dir = {version="0.7.4", features=["glob"]}
+#wgpu_canvas = "3.0.0"
+wgpu_canvas = {path="../wgpu_canvas"}
+hex = "0.4.3"
+
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = "0.14.1"
+
+[target.'cfg(not(any(target_arch = "wasm32", target_os = "android")))'.dependencies]
+env_logger = "0.11.6"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1.43.0", features = ["rt-multi-thread"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+console_error_panic_hook = "0.1.6"
+console_log = "1.0"
+wasm-bindgen-futures = "0.4.50"
+wasm-bindgen = "0.2.100"
+web-sys = { version = "0.3", features = [
+    "Document",
+    "Window",
+    "Element",
+]}
+
+[features]
+default = ["canvas"]
+canvas = []
+components = []
