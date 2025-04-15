@@ -1,3 +1,10 @@
+use main::desktop_main;
+
 fn main() {
-    println!("Hello, world!");
-}
+
+    #[cfg(not(target_arch = "wasm32"))]
+    desktop_main();
+
+  }
+
+
