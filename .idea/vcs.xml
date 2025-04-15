@@ -3,7 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/galaga" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/rust_on_rails" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/wgpu_canvas" vcs="Git" />
   </component>
