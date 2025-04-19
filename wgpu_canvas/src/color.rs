@@ -1,7 +1,7 @@
 use wgpu::{PipelineCompilationOptions, RenderPipelineDescriptor, PipelineLayoutDescriptor, DepthStencilState, MultisampleState, RenderPipeline, PrimitiveState, FragmentState, TextureFormat, BufferUsages, IndexFormat, VertexState, RenderPass, Device, Queue, VertexFormat, ShaderModule};
 use wgpu_dyn_buffer::{DynamicBufferDescriptor, DynamicBuffer};
-
-use crate::shape::{ShapeType, Shape, Vertex, Ellipse, Rectangle, RoundedRectangle};
+//ADDED LINE
+use crate::shape::{ShapeType, Shape, Vertex, Ellipse, Rectangle, RoundedRectangle, Line};
 use super::Area;
 
 #[derive(Clone, Copy, Debug)]
@@ -48,6 +48,8 @@ pub(crate) struct ColorShapeRenderer {
     ellipse_renderer: GenericColorRenderer<InnerColorShape<Ellipse>>,
     rectangle_renderer: GenericColorRenderer<InnerColorShape<Rectangle>>,
     rounded_rectangle_renderer: GenericColorRenderer<InnerColorShape<RoundedRectangle>>,
+    //ADDED LINE
+    line_renderer: GenericColorRenderer<InnerColorShape<Line>>,
 }
 
 impl ColorShapeRenderer {
@@ -61,10 +63,15 @@ impl ColorShapeRenderer {
         let ellipse_shader = device.create_shader_module(wgpu::include_wgsl!("color/ellipse.wgsl"));
         let rectangle_shader = device.create_shader_module(wgpu::include_wgsl!("color/rectangle.wgsl"));
         let rounded_rectangle_shader = device.create_shader_module(wgpu::include_wgsl!("color/rounded_rectangle.wgsl"));
+        //ADDED LINE
+        let line_shader = device.create_shader_module(wgpu::include_wgsl!("color/rectangle.wgsl")); // Reuse rectangle shader or create a new one
+
         ColorShapeRenderer{
             ellipse_renderer: GenericColorRenderer::new(device, texture_format, multisample, depth_stencil.clone(), ellipse_shader),
             rectangle_renderer: GenericColorRenderer::new(device, texture_format, multisample, depth_stencil.clone(), rectangle_shader),
             rounded_rectangle_renderer: GenericColorRenderer::new(device, texture_format, multisample, depth_stencil.clone(), rounded_rectangle_shader),
+            //ADDED LINE
+            line_renderer: GenericColorRenderer::new(device, texture_format, multisample, depth_stencil.clone(), line_shader),
         }
     }
 
@@ -78,15 +85,18 @@ impl ColorShapeRenderer {
         height: u32,
         cs_area: Vec<(ColorShape, Area)>,
     ) {
-        let (el_areas, rect_areas, rrect_areas) = cs_area.into_iter().fold(
-            (vec![], vec![], vec![]), |mut a, (cs, area)| {
+        let (el_areas, rect_areas, rrect_areas, line_areas) = cs_area.into_iter().fold(
+            (vec![], vec![], vec![], vec![]), |mut a, (cs, area)| {
                 match cs.1 {
                     ShapeType::Ellipse(ellipse) =>
                         a.0.push((InnerColorShape(cs.0, ellipse), area)),
                     ShapeType::Rectangle(rectangle) =>
                         a.1.push((InnerColorShape(cs.0, rectangle), area)),
                     ShapeType::RoundedRectangle(rounded_rectangle) =>
-                        a.2.push((InnerColorShape(cs.0, rounded_rectangle), area))
+                        a.2.push((InnerColorShape(cs.0, rounded_rectangle), area)),
+                    //ADDED LINE
+                    ShapeType::Line(line) =>
+                        a.3.push((InnerColorShape(cs.0, line), area)),
                 }
                 a
             }
@@ -95,6 +105,8 @@ impl ColorShapeRenderer {
         self.ellipse_renderer.prepare(device, queue, width, height, el_areas);
         self.rectangle_renderer.prepare(device, queue, width, height, rect_areas);
         self.rounded_rectangle_renderer.prepare(device, queue, width, height, rrect_areas);
+        //ADDED LINE
+        self.line_renderer.prepare(device, queue, width, height, line_areas);
     }
 
     /// Render using caller provided render pass.
@@ -103,6 +115,8 @@ impl ColorShapeRenderer {
         self.rectangle_renderer.render(render_pass);
         self.ellipse_renderer.render(render_pass);
         self.rounded_rectangle_renderer.render(render_pass);
+        //ADDED LINE
+        self.line_renderer.render(render_pass);
     }
 }
 

@@ -8,8 +8,8 @@ use std::collections::hash_map::Entry;
 
 use std::hash::{DefaultHasher, Hasher, Hash};
 use std::sync::Arc;
-
-use crate::shape::{ShapeType, Shape, Vertex, Ellipse, Rectangle, RoundedRectangle};
+//ADDED LINE
+use crate::shape::{ShapeType, Shape, Vertex, Ellipse, Rectangle, RoundedRectangle, Line};
 use super::Area;
 
 pub type ImageKey = u64;
@@ -120,6 +120,8 @@ pub(crate) struct ImageShapeRenderer {
     ellipse_renderer: GenericImageRenderer<Ellipse>,
     rectangle_renderer: GenericImageRenderer<Rectangle>,
     rounded_rectangle_renderer: GenericImageRenderer<RoundedRectangle>,
+    //ADDED LINE
+    line_renderer: GenericImageRenderer<Line>,
 }
 
 impl ImageShapeRenderer {
@@ -133,10 +135,15 @@ impl ImageShapeRenderer {
         let ellipse_shader = device.create_shader_module(wgpu::include_wgsl!("image/ellipse.wgsl"));
         let rectangle_shader = device.create_shader_module(wgpu::include_wgsl!("image/rectangle.wgsl"));
         let rounded_rectangle_shader = device.create_shader_module(wgpu::include_wgsl!("image/rounded_rectangle.wgsl"));
+        //ADDED LINE
+        let line_shader = device.create_shader_module(wgpu::include_wgsl!("image/rectangle.wgsl")); // Reuse rectangle shader or create a new one
+
         ImageShapeRenderer{
             ellipse_renderer: GenericImageRenderer::new(device, texture_format, multisample, depth_stencil.clone(), ellipse_shader),
             rectangle_renderer: GenericImageRenderer::new(device, texture_format, multisample, depth_stencil.clone(), rectangle_shader),
             rounded_rectangle_renderer: GenericImageRenderer::new(device, texture_format, multisample, depth_stencil.clone(), rounded_rectangle_shader),
+            //ADDED LINE
+            line_renderer: GenericImageRenderer::new(device, texture_format, multisample, depth_stencil.clone(), line_shader),
         }
     }
 
@@ -151,15 +158,18 @@ impl ImageShapeRenderer {
         image_atlas: &mut ImageAtlas,
         is_area: Vec<(ImageShape, Area)>,
     ) {
-        let (el_areas, rect_areas, rrect_areas) = is_area.into_iter().fold(
-            (vec![], vec![], vec![]), |mut a, (is, area)| {
+        let (el_areas, rect_areas, rrect_areas, line_areas) = is_area.into_iter().fold(
+            (vec![], vec![], vec![], vec![]), |mut a, (is, area)| {
                 match is.1 {
                     ShapeType::Ellipse(ellipse) =>
                         a.0.push((is.0, ellipse, area)),
                     ShapeType::Rectangle(rectangle) =>
                         a.1.push((is.0, rectangle, area)),
                     ShapeType::RoundedRectangle(rounded_rectangle) =>
-                        a.2.push((is.0, rounded_rectangle, area))
+                        a.2.push((is.0, rounded_rectangle, area)),
+                    //ADDED LINE
+                    ShapeType::Line(line) =>
+                        a.3.push((is.0, line, area)),
                 }
                 a
             }
@@ -168,13 +178,16 @@ impl ImageShapeRenderer {
         self.ellipse_renderer.prepare(device, queue, width, height, image_atlas, el_areas);
         self.rectangle_renderer.prepare(device, queue, width, height, image_atlas, rect_areas);
         self.rounded_rectangle_renderer.prepare(device, queue, width, height, image_atlas, rrect_areas);
+        //ADDED LINE
+        self.line_renderer.prepare(device, queue, width, height, image_atlas, line_areas);
     }
-
     /// Render using caller provided render pass.
     pub fn render(&self, render_pass: &mut RenderPass<'_>) {
         self.ellipse_renderer.render(render_pass);
         self.rectangle_renderer.render(render_pass);
         self.rounded_rectangle_renderer.render(render_pass);
+        //ADDED LINE
+        self.line_renderer.render(render_pass); // Add this line
     }
 }
 

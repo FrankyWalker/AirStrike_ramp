@@ -112,6 +112,29 @@ impl Shape for GenericShape {
         )
     }
 }
+//ADDED LINE
+#[derive(Clone, Copy, Debug)]
+pub struct Line {
+    pub shape: GenericShape,
+    pub corner_radius: u32
+}
+
+impl Shape for Line {
+    type Vertex = RoundedRectangleVertex;
+
+    fn build(self, width: u32, height: u32, a: Area, l: u16) -> ([Self::Vertex; 4], [u16; 6]) {
+        let size = self.shape.size;
+        let cr = (self.corner_radius as f32).min(size.0.min(size.1) as f32 / 2.0);
+        let rw = cr * (1.0 / size.0 as f32);
+        let rh = cr * (1.0 / size.1 as f32);
+
+        let (v, i) = self.shape.build(width, height, a, l);
+        (v.into_iter().map(|shape|
+            RoundedRectangleVertex{shape, radi: [rw, rh]}
+        ).collect::<Vec<_>>().try_into().unwrap(), i)
+    }
+}
+
 
 pub type Ellipse = GenericShape;
 pub type Rectangle = GenericShape;
@@ -155,5 +178,8 @@ impl Vertex for RoundedRectangleVertex {
 pub enum ShapeType {
     Ellipse(Ellipse),
     Rectangle(Rectangle),
-    RoundedRectangle(RoundedRectangle)
+    RoundedRectangle(RoundedRectangle),
+    //ADDED LINE
+    Line(Line)
 }
+

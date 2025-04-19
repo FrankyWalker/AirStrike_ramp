@@ -34,107 +34,10 @@ impl App for MyApp {
         // Clear the background with black color
         println!("Clearing background with color: 000000");
         ctx.clear("000000");
-
-        // Draw shapes
-        // Example 1: Red rounded rectangle
-        println!("Drawing rounded_rect1 at (100, 100) with size (200, 150) and corner radius 25");
-        ctx.draw(CanvasItem::Shape(
-            Area((100, 100), None),
-            Shape::RoundedRectangle(2, (200, 150), 25),
-            "FF0000", // Red
-            255
-        ));
-
-        // Example 2: Green rounded rectangle
-        println!("Drawing rounded_rect2 at (350, 100) with size (200, 150) and corner radius 25");
-        ctx.draw(CanvasItem::Shape(
-            Area((350, 100), None),
-            Shape::RoundedRectangle(2, (200, 150), 25),
-            "00FF00", // Green
-            255
-        ));
-
-        // Add images if available
-        if let Some((image1, image2)) = self.image_keys {
-            // Image 1 with rectangular shape
-            ctx.draw(CanvasItem::Image(
-                Area((100, 300), None),
-                Shape::Rectangle(0, (150, 150)),
-                image1,
-            ));
-
-            // Image 2 with rounded rectangle shape
-            ctx.draw(CanvasItem::Image(
-                Area((350, 300), None),
-                Shape::RoundedRectangle(0, (150, 150), 20),
-                image2,
-            ));
-        }
-
-        // Add text in different sizes if font is available
-        if let Some(font) = self.font {
-            // Large title text
-            ctx.draw(CanvasItem::Text(
-                Area((100, 500), None),
-                Text::new(
-                    "Large Title Text",
-                    "FFFFFF", // White
-                    255,
-                    Some(400),
-                    36, // Large font size
-                    42, // Line height
-                    font
-                )
-            ));
-
-            // Medium subtitle text
-            ctx.draw(CanvasItem::Text(
-                Area((100, 550), None),
-                Text::new(
-                    "Medium Subtitle Text",
-                    "CCCCCC", // Light gray
-                    255,
-                    Some(400),
-                    24, // Medium font size
-                    30, // Line height
-                    font
-                )
-            ));
-
-            // Small body text
-            ctx.draw(CanvasItem::Text(
-                Area((100, 600), None),
-                Text::new(
-                    "This is smaller body text that can be used for descriptions or other content that doesn't need to be as prominent as titles or subtitles.",
-                    "AAAAAA", // Lighter gray
-                    255,
-                    Some(600), // Wider text area
-                    16, // Small font size
-                    22, // Line height
-                    font
-                )
-            ));
-
-            // Right-aligned status text
-            ctx.draw(CanvasItem::Text(
-                Area((600, 50), None),
-                Text::new(
-                    "Status: Active",
-                    "00FF00", // Green
-                    255,
-                    Some(200),
-                    18, // Medium-small font size
-                    24, // Line height
-                    font
-                )
-            ));
-        }
-
-        // Example 5: Magenta normal rectangle
-        println!("Drawing rectangle at (100, 700) with size (200, 150)");
+        //ADDED LINE
         ctx.draw(CanvasItem::Shape(
             Area((100, 700), None),
-            Shape::Rectangle(2, (200, 150)),
+            Shape::Line(2, (200, 150)),
             "FF00FF", // Magenta
             255
         ));

@@ -61,6 +61,8 @@ impl Area {
 pub enum Shape {
     Ellipse(u32, (u32, u32)),
     Rectangle(u32, (u32, u32)),
+    //ADDED LINE
+    Line(u32, (u32, u32)),
     RoundedRectangle(u32, (u32, u32), u32),
 }
 
@@ -73,6 +75,10 @@ impl Shape {
                 wgpu_canvas::shape::Ellipse{stroke: st(stroke), size: p(s)}
             ),
             Shape::Rectangle(stroke, s) => wgpu_canvas::shape::ShapeType::Rectangle(
+                wgpu_canvas::shape::Rectangle{stroke: st(stroke), size: p(s)}
+            ),
+            //ADDED LINE
+            Shape::Line(stroke, s) => wgpu_canvas::shape::ShapeType::Rectangle(
                 wgpu_canvas::shape::Rectangle{stroke: st(stroke), size: p(s)}
             ),
             Shape::RoundedRectangle(stroke, s, corner_radius) => {
