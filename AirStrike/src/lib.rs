@@ -37,7 +37,7 @@ impl App for MyApp {
         //ADDED LINE
         ctx.draw(CanvasItem::Shape(
             Area((100, 700), None),
-            Shape::Line(2, (200, 150)),
+            Shape::Line(2, (200, 150), 25),
             "FF00FF", // Magenta
             255
         ));
