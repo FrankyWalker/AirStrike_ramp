@@ -62,7 +62,7 @@ pub enum Shape {
     Ellipse(u32, (u32, u32)),
     Rectangle(u32, (u32, u32)),
     //ADDED LINE
-    Line(u32, (u32, u32)),
+    Line(u32, (u32, u32), u32),
     RoundedRectangle(u32, (u32, u32), u32),
 }
 
@@ -78,9 +78,23 @@ impl Shape {
                 wgpu_canvas::shape::Rectangle{stroke: st(stroke), size: p(s)}
             ),
             //ADDED LINE
-            Shape::Line(stroke, s) => wgpu_canvas::shape::ShapeType::Rectangle(
-                wgpu_canvas::shape::Rectangle{stroke: st(stroke), size: p(s)}
-            ),
+            Shape::Line(stroke, s, corner_radius) => {
+                let corner_radius = size.scale_physical(corner_radius);
+                //let pcr = size.to_physical(corner_radius, corner_radius);
+                //let size = p(s);
+                //let corner_radius = if size.0 > size.1 {pcr.0} else {pcr.1};
+
+                wgpu_canvas::shape::ShapeType::Line(
+                    wgpu_canvas::shape::Line{
+                        shape: wgpu_canvas::shape::GenericShape{
+                            stroke: st(stroke),
+                            size: p(s)
+                        },
+                        corner_radius
+                    }
+                )
+            }
+
             Shape::RoundedRectangle(stroke, s, corner_radius) => {
                 let corner_radius = size.scale_physical(corner_radius);
               //let pcr = size.to_physical(corner_radius, corner_radius);
